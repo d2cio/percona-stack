@@ -1,0 +1,47 @@
+version: '1.0'
+services:
+  - name: db
+    type: percona
+    version: 5.7
+    configuration: StandAlone
+    password: null
+    ports:
+      - 3306
+    remoteAccess: false
+    deployTo:
+      - percona
+
+  - name: pma
+    type: php
+    version: 7.1
+    source:
+      type: git
+      url: https://github.com/phpmyadmin/phpmyadmin
+    extensions:
+      - mysqli
+      - opcache
+    configFiles:
+      - dest: $MAIN_PATH/config.inc.php
+        src: ./configs/config.inc.php
+    localDeps: composer install
+    deployTo:
+      - percona
+
+  - name: web
+    type: nginx
+    version: 1.13
+    ports:
+      - 80
+      - 443
+    remoteAccess: true
+    serviceFiles:
+      - name: pma
+        static: true
+    deployTo:
+      - percona
+
+hosts:
+  - name: percona
+    requirements:
+      cores: 1
+      memory: 1
