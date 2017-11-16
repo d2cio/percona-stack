@@ -17,6 +17,7 @@ services:
     source:
       type: git
       url: https://github.com/phpmyadmin/phpmyadmin
+      version: STABLE
     extensions:
       - mysqli
       - opcache
